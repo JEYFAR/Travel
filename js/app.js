@@ -155,8 +155,8 @@ const App = {
 
       // 4. Atracciones turísticas
       try {
-        const atracciones = await Tourism.obtenerAtracciones(lat, lon);
-        Tourism.renderCard(atracciones, document.getElementById('card-atracciones'));
+        const atracciones = await Tourism.obtenerAtracciones(lat, lon, 8, pais.name.common);
+        Tourism.renderCard(atracciones, document.getElementById('card-atracciones'), pais.name.common);
       } catch {
         document.getElementById('card-atracciones').innerHTML = '<p style="color:var(--text2);padding:1rem">No se pudieron cargar las atracciones.</p>';
       }
@@ -216,7 +216,7 @@ const App = {
         <div class="atraccion-card">
           <img src="${a.imagen}" alt="${a.nombre}" />
           <div class="atrac-body">
-            <h4>${a.nombre}</h4>
+            <h4>${a.nombre} <span style="font-size:0.8rem;color:var(--text2);display:block;margin-top:0.2rem">📍 ${a.pais || 'Atracción'}</span></h4>
             <button class="btn-danger" onclick="App.eliminarAtraccionFav('${a.xid}')">Eliminar</button>
           </div>
         </div>

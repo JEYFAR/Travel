@@ -6,7 +6,7 @@ const Tourism = {
 
   API_KEY: '5ae2e3f221c38a28845f05b6ac3f23e1a1b17e4ae3b4f37bfb9d4e6e',
 
-  async obtenerAtracciones(lat, lon, cantidad = 8) {
+  async obtenerAtracciones(lat, lon, cantidad = 8, nombrePais = '') {
     try {
       // Primero obtenemos la lista de lugares
       const urlLista = `https://api.opentripmap.com/0.1/en/places/radius?radius=50000&lon=${lon}&lat=${lat}&kinds=interesting_places&limit=${cantidad}&format=json&apikey=${this.API_KEY}`;
@@ -23,13 +23,13 @@ const Tourism = {
       throw new Error('Sin atracciones');
     } catch (e) {
       console.warn("OpenTripMap API failed or unauthorized. Using local fallback.");
-      return this.obtenerAtraccionesMock(lat, lon, cantidad);
+      return this.obtenerAtraccionesMock(lat, lon, cantidad, nombrePais);
     }
   },
 
-  obtenerAtraccionesMock(lat, lon, cantidad) {
+  obtenerAtraccionesMock(lat, lon, cantidad, nombrePais = 'Destino') {
     // Si estamos en Colombia (lat alrededor de 4.71, lon alrededor de -74.07)
-    if (Math.abs(lat - 4.71) < 5 && Math.abs(lon - (-74.07)) < 5) {
+    if (nombrePais.toLowerCase() === 'colombia' || (Math.abs(lat - 4.71) < 5 && Math.abs(lon - (-74.07)) < 5)) {
       return [
         {
           name: "Museo del Oro",
@@ -58,6 +58,13 @@ const Tourism = {
           preview: { source: "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=400&h=200&fit=crop" },
           wikipedia_extracts: { text: "La Catedral de Sal es un recinto construido en el interior de las minas de sal de Zipaquirá, considerada una joya arquitectónica y religiosa única." },
           xid: "mock_zipaquira"
+        },
+        {
+          name: "Parque Nacional Natural Tayrona",
+          kinds: "Natural reserves, beaches",
+          preview: { source: "https://images.unsplash.com/photo-1563804860086-6e4745811c4c?w=400&h=200&fit=crop" },
+          wikipedia_extracts: { text: "El Parque Tayrona es un área protegida en el Caribe colombiano, conocida por sus calas bordeadas de palmeras, selvas tropicales y abundante biodiversidad." },
+          xid: "mock_tayrona"
         }
       ];
     }
@@ -84,6 +91,20 @@ const Tourism = {
           preview: { source: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400&h=200&fit=crop" },
           wikipedia_extracts: { text: "El Santuario Meiji es un templo sintoísta dedicado a los espíritus deificados del Emperador Meiji y su esposa, situado en un hermoso bosque en medio de Tokio." },
           xid: "mock_meiji"
+        },
+        {
+          name: "Kinkaku-ji (Pabellón de Oro)",
+          kinds: "Temples, historic places",
+          preview: { source: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=200&fit=crop" },
+          wikipedia_extracts: { text: "Kinkaku-ji es un templo zen en Kioto cuyo nombre oficial es Rokuon-ji. Las dos plantas superiores están completamente recubiertas con pan de oro." },
+          xid: "mock_kinkakuji"
+        },
+        {
+          name: "Parque de Nara",
+          kinds: "Parks, natural places",
+          preview: { source: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=400&h=200&fit=crop" },
+          wikipedia_extracts: { text: "Un gran parque público situado en la ciudad de Nara, famoso por sus templos históricos y los cientos de ciervos sika que deambulan libremente." },
+          xid: "mock_narapark"
         }
       ];
     }
@@ -110,31 +131,59 @@ const Tourism = {
           preview: { source: "https://images.unsplash.com/photo-1478147427282-58a87a120781?w=400&h=200&fit=crop" },
           wikipedia_extracts: { text: "Notre-Dame de París es una catedral de culto católico, sede de la archidiócesis de París y una de las joyas más importantes del arte gótico." },
           xid: "mock_notredame"
+        },
+        {
+          name: "Palacio de Versalles",
+          kinds: "Castles, historic places",
+          preview: { source: "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?w=400&h=200&fit=crop" },
+          wikipedia_extracts: { text: "El Palacio de Versalles es un imponente edificio que funcionó como residencia real en siglos pasados. Es famoso por su arquitectura barroca y sus espectaculares jardines." },
+          xid: "mock_versailles"
+        },
+        {
+          name: "Arco del Triunfo",
+          kinds: "Monuments, historic places",
+          preview: { source: "https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=400&h=200&fit=crop" },
+          wikipedia_extracts: { text: "El Arco del Triunfo es uno de los monumentos más famosos de París. Se encuentra en la plaza Charles de Gaulle, en el extremo occidental de la avenida de los Campos Elíseos." },
+          xid: "mock_arc"
         }
       ];
     }
     // Genérico para cualquier otra coordenada
     return [
       {
-        name: "Plaza Central y Centro Histórico",
+        name: `Plaza Principal de ${nombrePais}`,
         kinds: "Historic places",
         preview: { source: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=200&fit=crop" },
-        wikipedia_extracts: { text: "El corazón cultural e histórico del destino, con hermosos edificios antiguos y cafés al aire libre." },
-        xid: "mock_gen_plaza"
+        wikipedia_extracts: { text: `El corazón cultural e histórico de ${nombrePais}, con hermosos edificios antiguos y cafés al aire libre.` },
+        xid: `mock_${nombrePais.toLowerCase().replace(/\s+/g, '_')}_plaza`
       },
       {
-        name: "Reserva de Parque Natural",
+        name: `Reserva de Parque Natural de ${nombrePais}`,
         kinds: "Nature reserves",
         preview: { source: "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&h=200&fit=crop" },
-        wikipedia_extracts: { text: "Una hermosa reserva natural protegida con vistas espectaculares, senderos y gran biodiversidad local." },
-        xid: "mock_gen_parque"
+        wikipedia_extracts: { text: `Una hermosa reserva natural protegida en ${nombrePais} con vistas espectaculares, senderos y gran biodiversidad local.` },
+        xid: `mock_${nombrePais.toLowerCase().replace(/\s+/g, '_')}_parque`
       },
       {
-        name: "Museo Histórico",
+        name: `Museo Histórico de ${nombrePais}`,
         kinds: "Museums",
         preview: { source: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=400&h=200&fit=crop" },
-        wikipedia_extracts: { text: "Fascinante museo local con colecciones que narran la rica historia y patrimonio de este destino." },
-        xid: "mock_gen_museo"
+        wikipedia_extracts: { text: `Fascinante museo en ${nombrePais} con colecciones que narran la rica historia y patrimonio de este destino.` },
+        xid: `mock_${nombrePais.toLowerCase().replace(/\s+/g, '_')}_museo`
+      },
+      {
+        name: `Mirador Panorámico de ${nombrePais}`,
+        kinds: "Viewpoints",
+        preview: { source: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=200&fit=crop" },
+        wikipedia_extracts: { text: `Punto panorámico espectacular que ofrece las mejores vistas de la región en ${nombrePais} y sus paisajes.` },
+        xid: `mock_${nombrePais.toLowerCase().replace(/\s+/g, '_')}_viewpoint`
+      },
+      {
+        name: `Mercado Local de ${nombrePais}`,
+        kinds: "Markets",
+        preview: { source: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=400&h=200&fit=crop" },
+        wikipedia_extracts: { text: `Colorido mercado en ${nombrePais} donde degustar comida típica y adquirir souvenirs tradicionales hechos a mano.` },
+        xid: `mock_${nombrePais.toLowerCase().replace(/\s+/g, '_')}_market`
       }
     ];
   },
@@ -150,7 +199,7 @@ const Tourism = {
     }
   },
 
-  renderCard(atracciones, contenedor) {
+  renderCard(atracciones, contenedor, nombrePais = 'Destino') {
     const imagenesDefault = [
       'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=200&fit=crop',
       'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=200&fit=crop',
@@ -177,7 +226,7 @@ const Tourism = {
             <h4>${nombre}</h4>
             <p>${descripcion}</p>
             <button class="btn-fav ${esFav ? 'guardado' : ''}"
-              onclick="Tourism.toggleFavAtraccion(this, '${xid}', '${nombre.replace(/'/g, "\\'")}', '${imagen}')">
+              onclick="Tourism.toggleFavAtraccion(this, '${xid}', '${nombre.replace(/'/g, "\\'")}', '${imagen}', '${nombrePais.replace(/'/g, "\\'")}')">
               ${esFav ? '⭐ Guardado' : '☆ Favorito'}
             </button>
           </div>
@@ -191,14 +240,14 @@ const Tourism = {
     `;
   },
 
-  toggleFavAtraccion(btn, xid, nombre, imagen) {
+  toggleFavAtraccion(btn, xid, nombre, imagen, nombrePais = 'Atracción') {
     const favs = Storage.obtenerAtraccionesFav();
     if (favs.some(f => f.xid === xid)) {
       Storage.eliminarAtraccionFav(xid);
       btn.textContent = '☆ Favorito';
       btn.classList.remove('guardado');
     } else {
-      Storage.agregarAtraccionFav({ xid, nombre, imagen });
+      Storage.agregarAtraccionFav({ xid, nombre, imagen, pais: nombrePais });
       btn.textContent = '⭐ Guardado';
       btn.classList.add('guardado');
     }
