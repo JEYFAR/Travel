@@ -4,12 +4,121 @@
 
 const Countries = {
 
+  API_KEY: 'rc_live_80b87eff21c04f3e9fffc72cda9c8d5d',
+
+  // Mapeador de nombres en español a inglés para facilitar la búsqueda en la API v5
+  traducirPais(nombre) {
+    const diccionario = {
+      "japon": "Japan",
+      "japón": "Japan",
+      "francia": "France",
+      "brasil": "Brazil",
+      "alemania": "Germany",
+      "españa": "Spain",
+      "espana": "Spain",
+      "estados unidos": "United States",
+      "eeuu": "United States",
+      "ee.uu.": "United States",
+      "reino unido": "United Kingdom",
+      "italia": "Italy",
+      "belgica": "Belgium",
+      "bélgica": "Belgium",
+      "suecia": "Sweden",
+      "suiza": "Switzerland",
+      "rusia": "Russia",
+      "china": "China",
+      "colombia": "Colombia",
+      "mexico": "Mexico",
+      "méxico": "Mexico",
+      "argentina": "Argentina",
+      "chile": "Chile",
+      "peru": "Peru",
+      "perú": "Peru",
+      "ecuador": "Ecuador",
+      "venezuela": "Venezuela",
+      "canada": "Canada",
+      "canadá": "Canada"
+    };
+    const key = nombre.toLowerCase().trim();
+    return diccionario[key] || nombre;
+  },
+
   async buscarPais(nombre) {
-    const url = `https://restcountries.com/v3.1/name/${encodeURIComponent(nombre)}?fullText=false`;
-    const response = await fetch(url);
+    const nombreEnIngles = this.traducirPais(nombre);
+    const url = `https://api.restcountries.com/countries/v5/names.common/${encodeURIComponent(nombreEnIngles)}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${this.API_KEY}`
+      }
+    });
+    
     if (!response.ok) throw new Error('País no encontrado');
-    const data = await response.json();
-    return data[0];
+    const responseData = await response.json();
+    const rawCountry = responseData.data?.objects?.[0] || (Array.isArray(responseData.data) ? responseData.data[0] : responseData.data);
+    if (!rawCountry) throw new Error('País no encontrado');
+    
+    return this.mapV5ToV3(rawCountry);
+  },
+
+  mapV5ToV3(v5Data) {
+    if (!v5Data) return null;
+    
+    // Si ya tiene el formato v3.1, retornarlo
+    if (v5Data.name && v5Data.name.common) return v5Data;
+
+    // Mapear capitales
+    const primaryCapital = Array.isArray(v5Data.capitals)
+      ? (v5Data.capitals.find(c => c.primary) || v5Data.capitals[0])
+      : null;
+    const capitalName = primaryCapital ? primaryCapital.name : 'N/A';
+    const latlng = primaryCapital && primaryCapital.coordinates
+      ? [primaryCapital.coordinates.lat, primaryCapital.coordinates.lng]
+      : [0, 0];
+
+    // Mapear monedas
+    const currencies = {};
+    if (Array.isArray(v5Data.currencies)) {
+      v5Data.currencies.forEach(c => {
+        if (c.code) {
+          currencies[c.code] = {
+            name: c.name || '',
+            symbol: c.symbol || ''
+          };
+        }
+      });
+    }
+
+    // Mapear idiomas
+    const languages = {};
+    if (Array.isArray(v5Data.languages)) {
+      v5Data.languages.forEach(l => {
+        const key = l.bcp47 || l.name?.toLowerCase().substring(0, 3) || 'lang';
+        languages[key] = l.name;
+      });
+    }
+
+    return {
+      name: {
+        common: v5Data.names?.common || 'N/A',
+        official: v5Data.names?.official || 'N/A'
+      },
+      flags: {
+        svg: v5Data.flag?.url_svg || '',
+        png: v5Data.flag?.url_png || ''
+      },
+      capital: [capitalName],
+      region: v5Data.region || 'N/A',
+      subregion: v5Data.subregion || 'N/A',
+      population: v5Data.population || 0,
+      currencies: currencies,
+      languages: languages,
+      cca3: v5Data.codes?.alpha_3 || '',
+      capitalInfo: {
+        latlng: latlng
+      },
+      latlng: latlng
+    };
   },
 
   renderCard(pais, contenedor) {
