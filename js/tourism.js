@@ -62,7 +62,7 @@ const Tourism = {
         {
           name: "Parque Nacional Natural Tayrona",
           kinds: "Natural reserves, beaches",
-          preview: { source: "https://images.unsplash.com/photo-1563804860086-6e4745811c4c?w=400&h=200&fit=crop" },
+          preview: { source: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=200&fit=crop" },
           wikipedia_extracts: { text: "El Parque Tayrona es un área protegida en el Caribe colombiano, conocida por sus calas bordeadas de palmeras, selvas tropicales y abundante biodiversidad." },
           xid: "mock_tayrona"
         }
@@ -181,7 +181,7 @@ const Tourism = {
       {
         name: `Mercado Local de ${nombrePais}`,
         kinds: "Markets",
-        preview: { source: "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=400&h=200&fit=crop" },
+        preview: { source: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=200&fit=crop" },
         wikipedia_extracts: { text: `Colorido mercado en ${nombrePais} donde degustar comida típica y adquirir souvenirs tradicionales hechos a mano.` },
         xid: `mock_${nombrePais.toLowerCase().replace(/\s+/g, '_')}_market`
       }

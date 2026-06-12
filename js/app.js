@@ -212,15 +212,16 @@ const App = {
     if (atracFavs.length === 0) {
       divAtrac.innerHTML = '<p class="empty-msg">⭐ Aún no tienes atracciones favoritas.</p>';
     } else {
-      divAtrac.innerHTML = `<div class="atracciones-grid">${atracFavs.map(a => `
+      const defaultImg = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=200&fit=crop';
+      divAtrac.innerHTML = atracFavs.map(a => `
         <div class="atraccion-card">
-          <img src="${a.imagen}" alt="${a.nombre}" />
+          <img src="${a.imagen}" alt="${a.nombre}" onerror="this.src='${defaultImg}'" />
           <div class="atrac-body">
             <h4>${a.nombre} <span style="font-size:0.8rem;color:var(--text2);display:block;margin-top:0.2rem">📍 ${a.pais || 'Atracción'}</span></h4>
             <button class="btn-danger" onclick="App.eliminarAtraccionFav('${a.xid}')">Eliminar</button>
           </div>
         </div>
-      `).join('')}</div>`;
+      `).join('');
     }
   },
 

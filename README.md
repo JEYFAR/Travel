@@ -42,12 +42,12 @@ TravelPlannerPro/
 ```
 
 ## 🌐 APIs utilizadas
-| API | Uso |
-|-----|-----|
-| REST Countries | Información general del país |
-| Open-Meteo | Clima actual |
-| Frankfurter | Conversión de monedas |
-| OpenTripMap | Atracciones turísticas |
+| API | Uso | Notas de Robustez / Implementación |
+|-----|-----|-----|
+| REST Countries | Información general del país | Versión v5 con autenticación por token y diccionario de traducción español-inglés integrado. |
+| Open-Meteo | Clima actual | Consulta directa mediante coordenadas geográficas en tiempo real. |
+| ExchangeRate-API | Conversión de monedas | Reemplaza a Frankfurter para dar soporte total a todas las divisas globales (incluyendo COP, USD, EUR y GBP). |
+| OpenTripMap | Atracciones turísticas | Implementada con un sistema de **degradación aceptable (Graceful Degradation)**: si la API no está disponible o la clave está inactiva, activa un fallback local que genera dinámicamente un mínimo de 5 atracciones turísticas detalladas, con fotos y descripciones únicas según el país consultado. |
 
 ## 🔗 Demo
-[Enlace al deploy en GitHub Pages]
+[GitHub Pages](https://jeyfar.github.io/Travel/)
