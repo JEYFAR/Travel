@@ -7,11 +7,13 @@ const Currency = {
   codigoMoneda: 'USD', // moneda del país actual
 
   async convertir(cantidad, desde, hacia) {
-    const url = `https://api.frankfurter.app/latest?amount=${cantidad}&from=${desde}&to=${hacia}`;
+    const url = `https://open.er-api.com/v6/latest/${desde}`;
     const response = await fetch(url);
     if (!response.ok) throw new Error('Error en conversión');
     const data = await response.json();
-    return data.rates[hacia];
+    const rate = data.rates[hacia];
+    if (!rate) throw new Error('Moneda no soportada');
+    return cantidad * rate;
   },
 
   renderCard(codigoMoneda, nombreMoneda, contenedor) {
