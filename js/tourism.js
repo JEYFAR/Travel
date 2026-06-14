@@ -4,7 +4,7 @@
 
 const Tourism = {
 
-  API_KEY: '5ae2e3f221c38a28845f05b6ac3f23e1a1b17e4ae3b4f37bfb9d4e6e',
+  API_KEY: '5ae2e3f221c38a28845f05b69aaaeb75508672e665468460818f4ff5',
 
   async obtenerAtracciones(lat, lon, cantidad = 8, nombrePais = '') {
     try {
